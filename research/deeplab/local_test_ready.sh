@@ -99,7 +99,8 @@ python "${WORK_DIR}"/eval.py \
   --checkpoint_dir="${TRAIN_LOGDIR}" \
   --eval_logdir="${EVAL_LOGDIR}" \
   --dataset_dir="${PASCAL_DATASET}" \
-  --max_number_of_evaluations=1
+  --max_number_of_evaluations=1 \
+  --sigma=0
 
 # Visualize the results.
 python "${WORK_DIR}"/vis.py \

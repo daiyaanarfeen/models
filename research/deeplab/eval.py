@@ -81,6 +81,11 @@ flags.DEFINE_integer('max_number_of_evaluations', 0,
                      'Maximum number of eval iterations. Will loop '
                      'indefinitely upon nonpositive values.')
 
+# Noise
+
+flags.DEFINE_integer('sigma', 0, 
+                     'std dev of gaussian noise in images')
+
 
 def main(unused_argv):
   tf.logging.set_verbosity(tf.logging.INFO)
@@ -101,7 +106,8 @@ def main(unused_argv):
         resize_factor=FLAGS.resize_factor,
         dataset_split=FLAGS.eval_split,
         is_training=False,
-        model_variant=FLAGS.model_variant)
+        model_variant=FLAGS.model_variant,
+        sigma=FLAGS.sigma)
 
     model_options = common.ModelOptions(
         outputs_to_num_classes={common.OUTPUT_TYPE: dataset.num_classes},

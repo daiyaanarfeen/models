@@ -36,7 +36,8 @@ def preprocess_image_and_label(image,
                                scale_factor_step_size=0,
                                ignore_label=255,
                                is_training=True,
-                               model_variant=None):
+                               model_variant=None,
+                               sigma=0):
   """Preprocesses the image and label.
 
   Args:
