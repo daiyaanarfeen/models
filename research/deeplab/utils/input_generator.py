@@ -73,7 +73,7 @@ def get(dataset,
         dataset_split=None,
         is_training=True,
         model_variant=None,
-        sigma=0):
+        sigma=0.0):
   """Gets the dataset split for semantic segmentation.
 
   This functions gets the dataset split for semantic segmentation. In

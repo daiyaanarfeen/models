@@ -83,7 +83,7 @@ flags.DEFINE_integer('max_number_of_evaluations', 0,
 
 # Noise
 
-flags.DEFINE_integer('sigma', 0, 
+flags.DEFINE_float('sigma', 0.0, 
                      'std dev of gaussian noise in images')
 
 

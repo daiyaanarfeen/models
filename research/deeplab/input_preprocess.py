@@ -37,7 +37,7 @@ def preprocess_image_and_label(image,
                                ignore_label=255,
                                is_training=True,
                                model_variant=None,
-                               sigma=0):
+                               sigma=0.0):
   """Preprocesses the image and label.
 
   Args:
@@ -135,5 +135,8 @@ def preprocess_image_and_label(image,
     # Randomly left-right flip the image and label.
     processed_image, label, _ = preprocess_utils.flip_dim(
         [processed_image, label], _PROB_OF_FLIP, dim=1)
+
+  #add noise
+  processed_image = processed_image + tf.random_normal(shape=tf.shape(processed_image), stddev=sigma)
 
   return original_image, processed_image, label
