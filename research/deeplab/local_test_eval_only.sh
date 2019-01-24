@@ -48,11 +48,6 @@ TRAIN_LOGDIR="${WORK_DIR}/${DATASET_DIR}/${PASCAL_FOLDER}/${EXP_FOLDER}/train"
 EVAL_LOGDIR="${WORK_DIR}/${DATASET_DIR}/${PASCAL_FOLDER}/${EXP_FOLDER}/eval"
 VIS_LOGDIR="${WORK_DIR}/${DATASET_DIR}/${PASCAL_FOLDER}/${EXP_FOLDER}/vis"
 EXPORT_DIR="${WORK_DIR}/${DATASET_DIR}/${PASCAL_FOLDER}/${EXP_FOLDER}/export"
-mkdir -p "${INIT_FOLDER}"
-mkdir -p "${TRAIN_LOGDIR}"
-mkdir -p "${EVAL_LOGDIR}"
-mkdir -p "${VIS_LOGDIR}"
-mkdir -p "${EXPORT_DIR}"
 
 # Copy locally the trained checkpoint as the initial checkpoint.
 TF_INIT_ROOT="http://download.tensorflow.org/models"
@@ -80,4 +75,4 @@ python "${WORK_DIR}"/eval.py \
   --eval_logdir="${EVAL_LOGDIR}" \
   --dataset_dir="${PASCAL_DATASET}" \
   --max_number_of_evaluations=1 \
-  --sigma=20.0
+  --sigma=0.0
