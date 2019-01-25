@@ -67,6 +67,9 @@ def preprocess_image_and_label(image,
   Raises:
     ValueError: Ground truth label not provided during training.
   """
+  if not is_training:
+    image = tf.image.resize_images(images=image, size=(129, 129), preserve_aspect_ratio=True)
+    label = tf.image.resize_images(images=label, size=(129, 129), preserve_aspect_ratio=True)
   if is_training and label is None:
     raise ValueError('During training, label must be provided.')
   if model_variant is None:
@@ -138,5 +141,5 @@ def preprocess_image_and_label(image,
 
   #add noise
   processed_image = processed_image + tf.random_normal(shape=tf.shape(processed_image), stddev=sigma)
-
+ 
   return original_image, processed_image, label
