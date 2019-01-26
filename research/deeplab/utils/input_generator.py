@@ -73,7 +73,8 @@ def get(dataset,
         dataset_split=None,
         is_training=True,
         model_variant=None,
-        sigma=0.0):
+        sigma=0.0,
+        res=None):
   """Gets the dataset split for semantic segmentation.
 
   This functions gets the dataset split for semantic segmentation. In
@@ -132,6 +133,14 @@ def get(dataset,
                        '[height, width, 1].')
 
     label.set_shape([None, None, 1])
+
+  # rescale resolution and add noise
+  if not is_training:
+    if res is not None:
+      image = tf.image.resize_images(images=image, size=(res, res), method=tf.image.ResizeMethod.NEAREST_NEIGHBOR, align_corners=True, preserve_aspect_ratio=True)
+      label = tf.image.resize_images(images=label, size=(res, res), method=tf.image.ResizeMethod.NEAREST_NEIGHBOR, align_corners=True, preserve_aspect_ratio=True)
+    image = tf.cast(image, tf.float32) + tf.random_normal(shape=tf.shape(image), stddev=sigma)
+
   original_image, image, label = input_preprocess.preprocess_image_and_label(
       image,
       label,
@@ -145,8 +154,7 @@ def get(dataset,
       scale_factor_step_size=scale_factor_step_size,
       ignore_label=dataset.ignore_label,
       is_training=is_training,
-      model_variant=model_variant,
-      sigma=sigma)
+      model_variant=model_variant)
   sample = {
       common.IMAGE: image,
       common.IMAGE_NAME: image_name,

@@ -75,4 +75,7 @@ python "${WORK_DIR}"/eval.py \
   --eval_logdir="${EVAL_LOGDIR}" \
   --dataset_dir="${PASCAL_DATASET}" \
   --max_number_of_evaluations=1 \
-  --sigma=0.0
+  --sigma=$1 \
+  --res=$2
+
+python "${WORK_DIR}"/add_miou_to_table.py $1 $2

@@ -36,8 +36,7 @@ def preprocess_image_and_label(image,
                                scale_factor_step_size=0,
                                ignore_label=255,
                                is_training=True,
-                               model_variant=None,
-                               sigma=0.0):
+                               model_variant=None):
   """Preprocesses the image and label.
 
   Args:
@@ -67,9 +66,6 @@ def preprocess_image_and_label(image,
   Raises:
     ValueError: Ground truth label not provided during training.
   """
-  if not is_training:
-    image = tf.image.resize_images(images=image, size=(129, 129), preserve_aspect_ratio=True)
-    label = tf.image.resize_images(images=label, size=(129, 129), preserve_aspect_ratio=True)
   if is_training and label is None:
     raise ValueError('During training, label must be provided.')
   if model_variant is None:
@@ -138,8 +134,5 @@ def preprocess_image_and_label(image,
     # Randomly left-right flip the image and label.
     processed_image, label, _ = preprocess_utils.flip_dim(
         [processed_image, label], _PROB_OF_FLIP, dim=1)
-
-  #add noise
-  processed_image = processed_image + tf.random_normal(shape=tf.shape(processed_image), stddev=sigma)
  
   return original_image, processed_image, label

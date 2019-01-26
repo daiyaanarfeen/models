@@ -20,6 +20,7 @@ See model.py for more details and usage.
 import math
 import six
 import tensorflow as tf
+from tensorflow.python.ops import io_ops
 from deeplab import common
 from deeplab import model
 from deeplab.datasets import segmentation_dataset
@@ -82,9 +83,10 @@ flags.DEFINE_integer('max_number_of_evaluations', 0,
                      'indefinitely upon nonpositive values.')
 
 # Noise
+flags.DEFINE_float('sigma', 0.0, 'std dev of gaussian noise in images')
 
-flags.DEFINE_float('sigma', 0.0, 
-                     'std dev of gaussian noise in images')
+# Resize resolution
+flags.DEFINE_integer('res', None , 'resize resolution to evaluate robustness to noise')
 
 
 def main(unused_argv):
@@ -107,7 +109,8 @@ def main(unused_argv):
         dataset_split=FLAGS.eval_split,
         is_training=False,
         model_variant=FLAGS.model_variant,
-        sigma=FLAGS.sigma)
+        sigma=FLAGS.sigma,
+        res=FLAGS.res)
 
     model_options = common.ModelOptions(
         outputs_to_num_classes={common.OUTPUT_TYPE: dataset.num_classes},
@@ -145,12 +148,6 @@ def main(unused_argv):
 
     # Define the evaluation metric.
     metric_map = {}
-    # insert by trobr
-    indices = tf.squeeze(tf.where(tf.less_equal(
-    labels, dataset.num_classes - 1)), 1)
-    labels = tf.cast(tf.gather(labels, indices), tf.int32)
-    predictions = tf.gather(predictions, indices)
-    # end of insert
     metric_map[predictions_tag] = tf.metrics.mean_iou(
         predictions, labels, dataset.num_classes, weights=weights)
 
@@ -171,12 +168,17 @@ def main(unused_argv):
     num_eval_iters = None
     if FLAGS.max_number_of_evaluations > 0:
       num_eval_iters = FLAGS.max_number_of_evaluations
+    
+    save_op = io_ops._save(filename="./deeplab/miou.ckpt", tensor_names=["miou"],
+                       tensors=[metrics_to_values[predictions_tag]])
+    
     slim.evaluation.evaluation_loop(
         master=FLAGS.master,
         checkpoint_dir=FLAGS.checkpoint_dir,
         logdir=FLAGS.eval_logdir,
         num_evals=num_batches,
         eval_op=list(metrics_to_updates.values()),
+        final_op=save_op,
         max_number_of_evaluations=num_eval_iters,
         eval_interval_secs=FLAGS.eval_interval_secs)
 
