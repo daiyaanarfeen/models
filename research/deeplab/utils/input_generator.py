@@ -137,8 +137,19 @@ def get(dataset,
   # rescale resolution and add noise
   if not is_training:
     if res is not None:
-      image = tf.image.resize_images(images=image, size=(res, res), method=tf.image.ResizeMethod.NEAREST_NEIGHBOR, align_corners=True, preserve_aspect_ratio=True)
-      label = tf.image.resize_images(images=label, size=(res, res), method=tf.image.ResizeMethod.NEAREST_NEIGHBOR, align_corners=True, preserve_aspect_ratio=True)
+      #Nearest-Neighbor resize
+      #image = tf.image.resize_images(images=image, size=(res, res), method=tf.image.ResizeMethod.NEAREST_NEIGHBOR, align_corners=True, preserve_aspect_ratio=True)
+      #label = tf.image.resize_images(images=label, size=(res, res), method=tf.image.ResizeMethod.NEAREST_NEIGHBOR, align_corners=True, preserve_aspect_ratio=True)
+      
+      #Bi-Linear resize
+      image = tf.image.resize_images(images=image, size=(res, res), align_corners=True, preserve_aspect_ratio=True)
+      label = tf.squeeze(label)
+      label = tf.one_hot(indices=label, depth=256, axis=-1)
+      shape = tf.shape(label)
+      label.set_shape([None, None, None])
+      label = tf.image.resize_images(images=label, size=(res, res), align_corners=True, preserve_aspect_ratio=True)
+      label = tf.argmax(label, axis=-1)
+      label = tf.expand_dims(label, 2)
     image = tf.cast(image, tf.float32) + tf.random_normal(shape=tf.shape(image), stddev=sigma)
 
   original_image, image, label = input_preprocess.preprocess_image_and_label(
